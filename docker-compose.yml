@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+  web:
+    image: nginx:latest
+    ports:
+        - "80:80"
+    volumes:
+        - ./code:/code
+        - ./site.conf:/etc/nginx/conf.d/default.conf
+  php:
+    image: mahype/phpbrew
+    ports:
+        - "9000:9000"
+    volumes:
+        - ./code:/code
