@@ -1,5 +1,7 @@
 FROM centos:centos7
-MAINTAINER Sven Wagener <sven@awesome.ug>
+
+ENV ACTIVE_PHP_VERSION=7.1.8
+ENV ACTIVE_PHP_VARIANTS="+fpm +mysql +calendar +dom +bcmath +bz2 +debug +gd +json +phar +session +zip +xml +xml_all +zlib"
 
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
     rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
@@ -18,30 +20,32 @@ RUN yum update && yum -y install \
     readline-devel \
     libxslt-devel \
     lcov \
+    systemtap-sdt-devel \
     net-tools \
     php56w
 
 #Installing phpbrew
 RUN curl -Lo /usr/bin/phpbrew https://github.com/phpbrew/phpbrew/raw/master/phpbrew && \
     chmod +x /usr/bin/phpbrew && \
-    echo "[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~/.bashrc && \
-    echo "source /root/.phpbrew/bashrc" >> ~/.bashrc && \
-    echo "export PHPBREW_SET_PROMPT=1" >> ~/.bashrc && \
-    echo "export PHPBREW_RC_ENABLE=1" >> ~/.bashrc && \
     mkdir -p /usr/local/phpbrew && \
     phpbrew init --root=/usr/local/phpbrew
 
-RUN phpbrew install 7.0.22 +fpm +cgi +mysql
+RUN  phpbrew install php-7.1.8 ${ACTIVE_PHP_VARIANTS} && \
+     phpbrew install php-7.0.22 ${ACTIVE_PHP_VARIANTS} && \
+     phpbrew install php-5.6.31 ${ACTIVE_PHP_VARIANTS}
 
-RUN sed -i -e 's~/root/.phpbrew/php/php-7.0.22/var/run/php-fpm.sock~9000~g' /root/.phpbrew/php/php-7.0.22/etc/php-fpm.d/www.conf
-RUN sed -i -e 's~nobody~www-data~g' /root/.phpbrew/php/php-7.0.22/etc/php-fpm.d/www.conf
+ADD run.sh /usr/bin/start
 
-RUN groupadd -g 82 www-data
-RUN adduser -g www-data www-data
+RUN source /root/.phpbrew/bashrc && \
+    echo "[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~/.bashrc && \
+    export PHPBREW_SET_PROMPT=1 && \
+    export PHPBREW_RC_ENABLE=1 && \
+    groupadd -g 82 www-data && \
+    adduser -g www-data www-data && \
+    chmod +x /usr/bin/start
 
-ADD run.sh /usr/bin/runphp
-RUN chmod +x /usr/bin/runphp
+RUN yum clean all
 
 EXPOSE 9000
 
-ENTRYPOINT /usr/bin/runphp
+ENTRYPOINT start
