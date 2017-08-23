@@ -48,4 +48,4 @@ RUN yum clean all
 
 EXPOSE 9000
 
-ENTRYPOINT start
+CMD start
