@@ -1,7 +1,7 @@
 FROM centos:centos7
 
 ENV ACTIVE_PHP_VERSION=7.1.8
-ENV ACTIVE_PHP_VARIANTS="+fpm +mysql +calendar +dom +bcmath +bz2 +debug +gd +json +phar +session +zip +xml +xml_all +zlib"
+ENV ACTIVE_PHP_VARIANTS="+fpm +mysql +filter +calendar +dom +bcmath +bz2 +debug +gd +json +phar +session +zip +xml +xml_all +zlib"
 
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
     rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
