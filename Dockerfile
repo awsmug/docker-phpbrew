@@ -34,12 +34,10 @@ RUN  phpbrew install php-7.1.8 ${ACTIVE_PHP_VARIANTS} && \
      phpbrew install php-7.0.22 ${ACTIVE_PHP_VARIANTS} && \
      phpbrew install php-5.6.31 ${ACTIVE_PHP_VARIANTS}
 
-ADD run.sh /usr/bin/start
+ADD start.sh /usr/bin/start
 
 RUN source /root/.phpbrew/bashrc && \
     echo "[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~/.bashrc && \
-    export PHPBREW_SET_PROMPT=1 && \
-    export PHPBREW_RC_ENABLE=1 && \
     groupadd -g 82 www-data && \
     adduser -g www-data www-data && \
     chmod +x /usr/bin/start
